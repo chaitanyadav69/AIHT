@@ -1,4 +1,4 @@
-!pip install Flask onnxruntime numpy
+#!pip install Flask onnxruntime numpy
 
 import flask
 import onnxruntime as ort
