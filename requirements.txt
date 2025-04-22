@@ -2,3 +2,4 @@ Flask
 onnxruntime
 numpy
 gunicorn
+pyspark
