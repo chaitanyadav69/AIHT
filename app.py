@@ -7,7 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/19tXI-QZMqUJLdMrynC89OFn3r6N5Zy3X
 """
 
-!pip install Flask onnxruntime numpy
+#!pip install Flask onnxruntime numpy
 
 import flask
 import onnxruntime as ort
