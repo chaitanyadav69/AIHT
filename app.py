@@ -1,14 +1,17 @@
+!pip install Flask onnxruntime numpy
+
 import flask
 import onnxruntime as ort
 import numpy as np
 import os
 import csv
 from datetime import datetime
+import threading
 
 app = flask.Flask(__name__)
 
 # --- Configuration ---
-MODEL_PATH = 'student_model.onnx'
+MODEL_PATH = 'student_model.onnx'  # Make sure this file is deployed with your app
 INPUT_NAME = None
 OUTPUT_NAME = None
 EXPECTED_INPUT_SHAPE = (1, 6)
@@ -37,12 +40,19 @@ def load_model():
         return False
 
 def log_to_csv(input_values, output_data):
-    file_exists = os.path.isfile(LOG_FILE)
-    with open(LOG_FILE, mode='a', newline='') as file:
-        writer = csv.writer(file)
-        if not file_exists:
-            writer.writerow(['timestamp'] + [f'input_{i+1}' for i in range(6)] + [f'output_{i+1}' for i in range(4)])
-        writer.writerow([datetime.now()] + input_values + output_data)
+    def write_row():
+        try:
+            file_exists = os.path.isfile(LOG_FILE)
+            with open(LOG_FILE, mode='a', newline='') as file:
+                writer = csv.writer(file)
+                if not file_exists:
+                    writer.writerow(['timestamp'] + [f'input_{i+1}' for i in range(6)] + [f'output_{i+1}' for i in range(4)])
+                writer.writerow([datetime.now()] + input_values + output_data)
+        except Exception as e:
+            print(f"[LOG ERROR] Failed to write to CSV: {e}")
+
+    # Run logging in a background thread
+    threading.Thread(target=write_row).start()
 
 @app.route('/infer', methods=['POST'])
 def infer():
