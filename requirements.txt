@@ -1,0 +1,4 @@
+Flask
+onnxruntime
+numpy
+gunicorn
